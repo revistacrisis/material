@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Archivo Historico Organizado de la Represion en Argentina</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+  <h1>Material</h1>
+    <h2><a id="email"></a></h2>
+    <button id="copy">copiar</button>
+    <p>
+        fecha de los hechos: 
+        <input id="date" type="date" />
+    </p>
+    <p>
+        Se ruega subir el material a una de estas plataformas y mandar un link al mail.
+    </p>
+    <ul>
+        <li><a href="https://wetransfer.com">We Transfer</a></li>
+        <li><a href="https://drive.google.com">Google Drive</a></li>
+        <li><a href="https://dropbox.com">DropBox</a></li>
+    </ul>
+<script type="text/javascript">
+const now = new Date();
+const mail = document.getElementById("email");
+const copy = document.getElementById("copy");
+const date = document.getElementById("date");
+
+const [day, month, year] = new Intl.DateTimeFormat('en', {year: 'numeric', day: '2-digit', month: '2-digit', year: 'numeric'}).format(now).split('/');
+function setEmail(year, month, day) {
+    const email = `${year}${month}${day}@archive.org`;
+    mail.innerHTML = email;
+}
+setEmail(year, month, day);
+
+const today = `${year}-${month}-${day}`;
+date.setAttribute('value', today);
+date.setAttribute('max', today);
+date.addEventListener('change', ({target}) => {
+    const [year, month, day] = target.value.split('-');
+    setEmail(year, month, day);
+});
+
+copy.addEventListener("click", () => navigator.clipboard.writeText(email));
+</script>
+  </body>
+</html>
