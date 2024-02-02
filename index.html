@@ -33,6 +33,7 @@ const [day, month, year] = new Intl.DateTimeFormat('en', {year: 'numeric', day: 
 function setEmail(year, month, day) {
     const email = `${year}${month}${day}@archive.org`;
     mail.innerHTML = email;
+    mail.setAttribute('href', `mailto:${email}`);
 }
 setEmail(year, month, day);
 
