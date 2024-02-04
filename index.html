@@ -15,6 +15,7 @@
         fecha de los hechos: 
         <input id="date" type="date" />
     </p>
+    <div id="config" style="display: flex;"></div>
     <p>
         Se ruega subir el material a una de estas plataformas y mandar un link al mail.
     </p>
@@ -29,20 +30,65 @@ const mail = document.getElementById("email");
 const copy = document.getElementById("copy");
 const date = document.getElementById("date");
 
-const [day, month, year] = new Intl.DateTimeFormat('en', {year: 'numeric', day: '2-digit', month: '2-digit', year: 'numeric'}).format(now).split('/');
-function setEmail(year, month, day) {
-    const email = `${year}${month}${day}@archivo.ar`;
-    mail.innerHTML = email;
-    mail.setAttribute('href', `mailto:${email}`);
+function encodeURIParams(p) {
+  return Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
 }
-setEmail(year, month, day);
+
+function bindInput(config, n, l, t="text") {
+  config[n] = localStorage.getItem(n);
+  const ce = document.getElementById("config");
+
+  const se = document.createElement("span");
+  const le = document.createElement("label");
+  le.setAttribute("for", n);
+  le.innerHTML = `${l} :`;
+  se.appendChild(le);
+
+  const ie = document.createElement("input");
+  ie.setAttribute("type", t);
+  ie.setAttribute("name", n);
+  config[n] && ie.setAttribute("value", config[n]);
+  ie.addEventListener("change", ({target}) => {
+    config[n] = target.value;
+    localStorage.setItem(n, target.value);
+    setEmail(config);
+  });
+  se.appendChild(ie);
+  ce.appendChild(se);
+}
+
+function setEmail({date, ...config}) {
+  const {day, month, year} = date;
+    const emailConfig = {
+      subject: `Material ${day} ${month} ${year}`,
+      body: `Les mando el material que recolecte del ${day}/${month}/${year}
+
+Nombre: ${config.name}
+DNI: ${config.id}
+Link: ${config.link}
+Lugar:
+Hora (aprox):
+      `
+    };
+    const email = `${year}${month}${day}@archive.org`;
+    mail.innerHTML = email;
+    mail.setAttribute('href', `mailto:${email}?${encodeURIParams(emailConfig)}`);
+}
+
+const [day, month, year] = new Intl.DateTimeFormat('en', {year: 'numeric', day: '2-digit', month: '2-digit', year: 'numeric'}).format(now).split('/');
+const config = {date: {day, month, year}};
+bindInput(config, "name", "Nombre");
+bindInput(config, "id", "DNI", "number");
+bindInput(config, "link", "link al contenido", "url");
+setEmail(config);
 
 const today = `${year}-${month}-${day}`;
 date.setAttribute('value', today);
 date.setAttribute('max', today);
 date.addEventListener('change', ({target}) => {
     const [year, month, day] = target.value.split('-');
-    setEmail(year, month, day);
+    config.date = {year, month, day}
+    setEmail(config);
 });
 
 copy.addEventListener("click", () => navigator.clipboard.writeText(email));
