@@ -9,8 +9,6 @@
   </head>
   <body>
   <h1>Material</h1>
-    <h2><a id="email"></a></h2>
-    <button id="copy">copiar</button>
     <p>
         fecha de los hechos: 
         <input id="date" type="date" />
@@ -19,6 +17,9 @@
     <p>
         Se ruega subir el material a una de estas plataformas y mandar un link al mail.
     </p>
+    <h2><a id="email"></a></h2>
+    <button id="send">enviar</button>
+    <button id="copy">copiar</button>
     <ul>
         <li><a href="https://wetransfer.com">We Transfer</a></li>
         <li><a href="https://drive.google.com">Google Drive</a></li>
@@ -29,6 +30,7 @@ const now = new Date();
 const mail = document.getElementById("email");
 const copy = document.getElementById("copy");
 const date = document.getElementById("date");
+const send = document.getElementById("send");
 
 function encodeURIParams(p) {
   return Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
@@ -75,7 +77,7 @@ Hora (aprox):
     mail.setAttribute('href', `mailto:${email}?${encodeURIParams(emailConfig)}`);
 }
 
-const [day, month, year] = new Intl.DateTimeFormat('en', {year: 'numeric', day: '2-digit', month: '2-digit', year: 'numeric'}).format(now).split('/');
+const [month, day, year] = new Intl.DateTimeFormat('en', {year: 'numeric', day: '2-digit', month: '2-digit', year: 'numeric'}).format(now).split('/');
 const config = {date: {day, month, year}};
 bindInput(config, "name", "Nombre");
 bindInput(config, "id", "DNI", "number");
@@ -92,6 +94,7 @@ date.addEventListener('change', ({target}) => {
 });
 
 copy.addEventListener("click", () => navigator.clipboard.writeText(email));
+send.addEventListener("click", () => mail.click());
 </script>
   </body>
 </html>
